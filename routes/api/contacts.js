@@ -7,9 +7,9 @@ const { listContacts } = require("../../models/contacts");
 router.get("/", async (req, res, next) => {
   try {
     const contacts = await listContacts();
-    res.json({ contacts, message: "template message" });
+    res.json({ contacts, message: "success" });
   } catch (error) {
-    res.status(400).json({ status: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
