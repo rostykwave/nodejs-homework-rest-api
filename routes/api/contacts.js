@@ -27,9 +27,7 @@ router.get("/:contactId", async (req, res, next) => {
     const contact = await getContactById(contactId);
 
     if (!contact) {
-      return res
-        .status(400)
-        .json({ message: `There is no contact with id ${contactId}` });
+      return res.status(404).json({ message: `Not found` });
     }
     res.json({ contact, message: "success" });
   } catch (error) {
@@ -41,8 +39,8 @@ router.post("/", addContactssValidation, async (req, res, next) => {
   const body = req.body;
 
   try {
-    await addContact(body);
-    res.json({ message: "success" });
+    const addedContact = await addContact(body);
+    res.status(201).json({ ...addedContact });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -52,25 +50,28 @@ router.delete("/:contactId", async (req, res, next) => {
   const { contactId } = req.params;
 
   try {
-    await removeContact(contactId);
-    res.json({ message: "success" });
+    const contact = await removeContact(contactId);
+    if (!contact) {
+      return res.status(404).json({ message: `Not found` });
+    }
+    res.json({ message: "contact deleted" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
 router.put("/:contactId", addContactssValidation, async (req, res, next) => {
-  // res.json({ message: "template message" });
   const { contactId } = req.params;
   const body = req.body;
+  if (!body) {
+    return res.status(400).json({ message: "missing fields" });
+  }
 
   try {
     const contact = await updateContact(contactId, body);
 
     if (!contact) {
-      return res
-        .status(400)
-        .json({ message: `There is no contact with id ${contactId}` });
+      return res.status(404).json({ message: `Not found` });
     }
     res.json({ contact, message: "success" });
   } catch (error) {

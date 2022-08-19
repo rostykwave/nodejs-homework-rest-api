@@ -33,11 +33,15 @@ const getContactById = async (contactId) => {
 const removeContact = async (contactId) => {
   const data = await fs.readFile(contactsPath);
   const contacts = JSON.parse(data);
-  const updatedContacts = contacts.filter(
-    (contact) => contact.id !== contactId
-  );
+  const [contact] = contacts.filter((contact) => contact.id === contactId);
+  if (contact) {
+    const updatedContacts = contacts.filter(
+      (contact) => contact.id !== contactId
+    );
 
-  fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
+    fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
+  }
+  return contact;
 };
 
 const addContact = async (body) => {
@@ -46,22 +50,26 @@ const addContact = async (body) => {
   const newContact = { id: new Date().getTime().toString(), ...body };
   contacts.push(newContact);
   fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+  return newContact;
 };
 
 const updateContact = async (contactId, body) => {
   const data = await fs.readFile(contactsPath);
   const contacts = JSON.parse(data.toString());
-  contacts.forEach((contact) => {
-    if (contact.id === contactId) {
-      contact.name = body.name;
-      contact.email = body.email;
-      contact.phone = body.phone;
-    }
-  });
-
-  fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
 
   const [contact] = contacts.filter((contact) => contact.id === contactId);
+
+  if (contact) {
+    contacts.forEach((contact) => {
+      if (contact.id === contactId) {
+        contact.name = body.name;
+        contact.email = body.email;
+        contact.phone = body.phone;
+      }
+    });
+
+    fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+  }
   return contact;
 };
 
