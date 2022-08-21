@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const { ValidationError } = require("../helpers/errors");
 
 module.exports = {
   addContactssValidation: (req, res, next) => {
@@ -21,7 +22,9 @@ module.exports = {
     const validationResult = schema.validate(req.body);
 
     if (validationResult.error) {
-      return res.status(400).json({ message: validationResult.error.details });
+      const [validationError] = validationResult.error.details;
+      // return res.status(400).json({ message: validationResult.error.details });
+      next(new ValidationError(`missing ${validationError.message}`));
     }
 
     next();
