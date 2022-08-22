@@ -8,11 +8,18 @@ const listContacts = async () => {
 };
 
 const getContactById = async (id) => {
-  const contact = await Contact.findById(id);
-  if (!contact) {
-    throw new NotFoundError();
+  // const contact = await Contact.findById(id);
+  // if (!contact) {
+  //   throw new NotFoundError();
+  // }
+  // return contact;
+
+  try {
+    const contact = await Contact.findById(id);
+    return contact;
+  } catch (error) {
+    throw new NotFoundError(error);
   }
-  return contact;
 };
 
 const addContact = async (body) => {
@@ -26,6 +33,41 @@ const addContact = async (body) => {
   return contact;
 };
 
+const updateContact = async (id, body) => {
+  if (!body) {
+    // return res.status(400).json({ message: "missing fields" });
+    throw new MissingFieldsError("missing fields");
+  }
+
+  try {
+    const contact = await Contact.findByIdAndUpdate(
+      id,
+      { $set: body },
+      {
+        new: true,
+      }
+    );
+    return contact;
+  } catch (error) {
+    throw new NotFoundError(error);
+  }
+
+  // const contact = await Contact.findByIdAndUpdate(
+  //   id,
+  //   { $set: body },
+  //   {
+  //     new: true,
+  //   }
+  // );
+
+  // if (!contact) {
+  //   // return res.status(404).json({ message: `Not found` });
+  //   throw new NotFoundError();
+  // }
+
+  // return contact;
+};
+
 const removeContact = async (id) => {
   const contact = await Contact.findByIdAndRemove(id);
   if (!contact) {
@@ -33,22 +75,10 @@ const removeContact = async (id) => {
     throw new NotFoundError();
   }
 };
-
-const updateContact = async (id, body) => {
-  const contact = await Contact.findByIdAndUpdate(id, { $set: body });
-
-  if (!contact) {
-    // return res.status(404).json({ message: `Not found` });
-    throw new NotFoundError();
-  }
-
-  return contact;
-};
-
 module.exports = {
   listContacts,
   getContactById,
   addContact,
-  removeContact,
   updateContact,
+  removeContact,
 };

@@ -2,8 +2,8 @@ const {
   listContacts,
   getContactById,
   addContact,
-  removeContact,
   updateContact,
+  removeContact,
 } = require("../services/contactsService");
 // const {
 //   listContacts,
@@ -12,7 +12,7 @@ const {
 //   removeContact,
 //   updateContact,
 // } = require("../models/contacts");
-const { MissingFieldsError } = require("../helpers/errors");
+// const { MissingFieldsError } = require("../helpers/errors");
 
 const listContactsController = async (req, res, next) => {
   const contacts = await listContacts();
@@ -21,7 +21,6 @@ const listContactsController = async (req, res, next) => {
 
 const getContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;
-
   const contact = await getContactById(contactId);
 
   res.json({ contact, message: "success" });
@@ -29,9 +28,22 @@ const getContactByIdController = async (req, res, next) => {
 
 const addContactController = async (req, res, next) => {
   const body = req.body;
-
   const addedContact = await addContact(body);
-  res.status(201).json({ ...addedContact });
+  res.status(201).json({ addedContact, message: "success" });
+};
+
+const updateContactController = async (req, res, next) => {
+  const { contactId } = req.params;
+  const body = req.body;
+  console.log("body", body);
+  // if (!body) {
+  //   // return res.status(400).json({ message: "missing fields" });
+  //   throw new MissingFieldsError("missing fields");
+  // }
+
+  const contact = await updateContact(contactId, body);
+
+  res.json({ contact, message: "update success" });
 };
 
 const removeContactController = async (req, res, next) => {
@@ -40,18 +52,6 @@ const removeContactController = async (req, res, next) => {
   await removeContact(contactId);
 
   res.json({ message: "contact deleted" });
-};
-const updateContactController = async (req, res, next) => {
-  const { contactId } = req.params;
-  const body = req.body;
-  if (!body) {
-    // return res.status(400).json({ message: "missing fields" });
-    throw new MissingFieldsError("missing fields");
-  }
-
-  const contact = await updateContact(contactId, body);
-
-  res.json({ contact, message: "success" });
 };
 
 module.exports = {
