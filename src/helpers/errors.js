@@ -8,7 +8,7 @@ class NotFoundError extends Error {
   constructor(message) {
     super(message);
     this.status = 404;
-    this.message = `Not found. ${message}`;
+    this.message = `Not found`;
   }
 }
 class MissingFieldsError extends Error {

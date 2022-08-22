@@ -16,9 +16,14 @@ const getContactById = async (id) => {
 
   try {
     const contact = await Contact.findById(id);
+
+    if (!contact) {
+      throw new NotFoundError();
+    }
+
     return contact;
   } catch (error) {
-    throw new NotFoundError(error);
+    throw new NotFoundError();
   }
 };
 
@@ -69,9 +74,13 @@ const updateContact = async (id, body) => {
 };
 
 const removeContact = async (id) => {
-  const contact = await Contact.findByIdAndRemove(id);
-  if (!contact) {
-    // return res.status(404).json({ message: `Not found` });
+  try {
+    const contact = await Contact.findByIdAndRemove(id);
+    if (!contact) {
+      // return res.status(404).json({ message: `Not found` });
+      throw new NotFoundError();
+    }
+  } catch (error) {
     throw new NotFoundError();
   }
 };
