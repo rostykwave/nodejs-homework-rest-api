@@ -4,8 +4,9 @@ const {
   listContactsController,
   getContactByIdController,
   addContactController,
-  removeContactController,
   updateContactController,
+  updateStatusContactController,
+  removeContactController,
 } = require("../../controllers/contactsControllers");
 const {
   addContactssValidation,
@@ -18,12 +19,17 @@ router.get("/:contactId", asyncWrapper(getContactByIdController));
 
 router.post("/", addContactssValidation, asyncWrapper(addContactController));
 
-router.delete("/:contactId", asyncWrapper(removeContactController));
-
 router.put(
   "/:contactId",
   addContactssValidation,
   asyncWrapper(updateContactController)
 );
+
+router.patch(
+  "/:contactId/favorite",
+  asyncWrapper(updateStatusContactController)
+);
+
+router.delete("/:contactId", asyncWrapper(removeContactController));
 
 module.exports = router;

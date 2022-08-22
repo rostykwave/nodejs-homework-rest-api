@@ -40,7 +40,6 @@ const addContact = async (body) => {
 
 const updateContact = async (id, body) => {
   if (!body) {
-    // return res.status(400).json({ message: "missing fields" });
     throw new MissingFieldsError("missing fields");
   }
 
@@ -56,21 +55,26 @@ const updateContact = async (id, body) => {
   } catch (error) {
     throw new NotFoundError(error);
   }
+};
 
-  // const contact = await Contact.findByIdAndUpdate(
-  //   id,
-  //   { $set: body },
-  //   {
-  //     new: true,
-  //   }
-  // );
+const updateStatusContact = async (id, body) => {
+  const { favorite } = body;
+  if (!favorite) {
+    throw new MissingFieldsError("missing fields favorite");
+  }
 
-  // if (!contact) {
-  //   // return res.status(404).json({ message: `Not found` });
-  //   throw new NotFoundError();
-  // }
-
-  // return contact;
+  try {
+    const contact = await Contact.findByIdAndUpdate(
+      id,
+      { $set: { favorite } },
+      {
+        new: true,
+      }
+    );
+    return contact;
+  } catch (error) {
+    throw new NotFoundError(error);
+  }
 };
 
 const removeContact = async (id) => {
@@ -89,5 +93,6 @@ module.exports = {
   getContactById,
   addContact,
   updateContact,
+  updateStatusContact,
   removeContact,
 };

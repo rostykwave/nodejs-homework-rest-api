@@ -23,7 +23,6 @@ module.exports = {
 
     if (validationResult.error) {
       const [validationError] = validationResult.error.details;
-      // return res.status(400).json({ message: validationResult.error.details });
       next(new ValidationError(`missing ${validationError.message}`));
     }
 

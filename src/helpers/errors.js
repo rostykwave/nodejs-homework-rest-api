@@ -15,7 +15,6 @@ class MissingFieldsError extends Error {
   constructor(message) {
     super(message);
     this.status = 400;
-    this.message = `MissingFieldsError`;
   }
 }
 
