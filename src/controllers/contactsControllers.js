@@ -1,4 +1,4 @@
-const { MissingFieldsError } = require("../helpers/errors");
+
 const {
   listContacts,
   getContactById,
@@ -7,10 +7,9 @@ const {
   removeContact,
 } = require("../services/contactsService");
 
-// const { MissingFieldsError } = require("../helpers/errors");
-
 const listContactsController = async (req, res, next) => {
   const contacts = await listContacts();
+
   res.json(contacts);
 };
 
@@ -35,7 +34,7 @@ const updateContactController = async (req, res, next) => {
 
   const contact = await updateContact(contactId, body);
 
-  res.json({ contact, message: "update success" });
+  res.json(contact);
 };
 
 const removeContactController = async (req, res, next) => {

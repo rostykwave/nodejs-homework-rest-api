@@ -2,8 +2,7 @@ const fs = require("node:fs/promises");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 
-const contactsPath = path.resolve("src/models/contacts.json");
-// const { WromgParametersError } = require("../helpers/errors");
+const contactsPath = path.resolve("src/db/contacts.json");
 const { NotFoundError, MissingFieldsError } = require("../helpers/errors");
 
 const listContacts = async () => {
@@ -17,6 +16,7 @@ const getContactById = async (contactId) => {
   const contacts = await listContacts();
 
   const contactById = contacts.find((contact) => contact.id === contactId);
+
   if (!contactById) {
     throw new NotFoundError();
   }
@@ -26,9 +26,11 @@ const getContactById = async (contactId) => {
 
 const addContact = async (body) => {
   const { name, email, phone } = body;
+
   if (!body) {
     throw new MissingFieldsError("missing fields");
   }
+
   const contacts = await listContacts();
 
   const newContact = {
@@ -55,8 +57,9 @@ const updateContact = async (contactId, body) => {
   const indexOfUpdatingContact = contacts.findIndex(
     (contact) => contact.id === contactId
   );
+
   if (indexOfUpdatingContact === -1) {
-    throw new NotFoundError(`Contact with id ${contactId}is no found`);
+    throw new NotFoundError();
   }
 
   const updatingContact = contacts[indexOfUpdatingContact];
@@ -78,7 +81,7 @@ const removeContact = async (contactId) => {
     (contact) => contact.id === contactId
   );
   if (indexOfRemovingContact === -1) {
-    throw new NotFoundError(`Contact with id ${contactId}is no found`);
+    throw new NotFoundError();
   }
   const removedContactByID = contacts[indexOfRemovingContact];
   contacts.splice(indexOfRemovingContact, 1);
