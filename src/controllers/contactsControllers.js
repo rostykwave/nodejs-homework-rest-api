@@ -1,34 +1,55 @@
-
 const {
   listContacts,
-  getContactById,
+  getById,
   addContact,
   updateContact,
   removeContact,
-} = require("../services/contactsService");
+} = require('../services/contactsService');
 
-const listContactsController = async (req, res, next) => {
+const listContactsController = async (req, res) => {
   const contacts = await listContacts();
 
   res.json(contacts);
 };
 
-const getContactByIdController = async (req, res, next) => {
+const getContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const contact = await getContactById(contactId);
+  const contact = await getById(contactId);
+
+  if (!contact) {
+    res.status(404).json({ message: 'Not found' });
+  }
 
   res.json(contact);
 };
 
-const addContactController = async (req, res, next) => {
+const addContactController = async (req, res) => {
   const body = req.body;
+  const { name, email, phone } = body;
+  const missingFields = [];
+
+  if (!name) {
+    missingFields.push('name');
+  }
+  if (!email) {
+    missingFields.push('email');
+  }
+  if (!phone) {
+    missingFields.push('phone');
+  }
+
+  if (!name || !email || !phone) {
+    res
+      .status(400)
+      .json({ message: `missing required ${missingFields.join(', ')} field` });
+  }
 
   const addedContact = await addContact(body);
 
   res.status(201).json(addedContact);
 };
 
-const updateContactController = async (req, res, next) => {
+const updateContactController = async (req, res) => {
   const { contactId } = req.params;
   const body = req.body;
 
@@ -37,12 +58,16 @@ const updateContactController = async (req, res, next) => {
   res.json(contact);
 };
 
-const removeContactController = async (req, res, next) => {
+const removeContactController = async (req, res) => {
   const { contactId } = req.params;
 
-  await removeContact(contactId);
+  const contact = await removeContact(contactId);
 
-  res.json({ message: "contact deleted" });
+  if (!contact) {
+    res.status(404).json({ message: 'Not found' });
+  }
+
+  res.json({ message: 'contact deleted' });
 };
 
 module.exports = {

@@ -1,9 +1,8 @@
-const fs = require("node:fs/promises");
-const path = require("path");
-const { v4: uuidv4 } = require("uuid");
+const fs = require('node:fs/promises');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
-const contactsPath = path.resolve("src/db/contacts.json");
-const { NotFoundError, MissingFieldsError } = require("../helpers/errors");
+const contactsPath = path.resolve('src/db/contacts.json');
 
 const listContacts = async () => {
   const data = await fs.readFile(contactsPath);
@@ -12,24 +11,15 @@ const listContacts = async () => {
   return contacts;
 };
 
-const getContactById = async (contactId) => {
+const getById = async contactId => {
   const contacts = await listContacts();
-
-  const contactById = contacts.find((contact) => contact.id === contactId);
-
-  if (!contactById) {
-    throw new NotFoundError();
-  }
+  const contactById = contacts.find(contact => contact.id === contactId);
 
   return contactById;
 };
 
-const addContact = async (body) => {
+const addContact = async body => {
   const { name, email, phone } = body;
-
-  if (!body) {
-    throw new MissingFieldsError("missing fields");
-  }
 
   const contacts = await listContacts();
 
@@ -48,19 +38,19 @@ const addContact = async (body) => {
 };
 
 const updateContact = async (contactId, body) => {
-  if (!body) {
-    throw new MissingFieldsError("missing fields");
-  }
+  // if (!body) {
+  //   throw new MissingFieldsError("missing fields");
+  // }
 
   const contacts = await listContacts();
 
   const indexOfUpdatingContact = contacts.findIndex(
-    (contact) => contact.id === contactId
+    contact => contact.id === contactId
   );
 
-  if (indexOfUpdatingContact === -1) {
-    throw new NotFoundError();
-  }
+  // if (indexOfUpdatingContact === -1) {
+  //   throw new NotFoundError();
+  // }
 
   const updatingContact = contacts[indexOfUpdatingContact];
 
@@ -74,15 +64,17 @@ const updateContact = async (contactId, body) => {
   return updatingContact;
 };
 
-const removeContact = async (contactId) => {
+const removeContact = async contactId => {
   const contacts = await listContacts();
 
   const indexOfRemovingContact = contacts.findIndex(
-    (contact) => contact.id === contactId
+    contact => contact.id === contactId
   );
+
   if (indexOfRemovingContact === -1) {
-    throw new NotFoundError();
+    return undefined;
   }
+
   const removedContactByID = contacts[indexOfRemovingContact];
   contacts.splice(indexOfRemovingContact, 1);
   fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
@@ -91,7 +83,7 @@ const removeContact = async (contactId) => {
 };
 module.exports = {
   listContacts,
-  getContactById,
+  getById,
   addContact,
   updateContact,
   removeContact,
