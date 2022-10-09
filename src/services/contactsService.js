@@ -37,33 +37,6 @@ const addContact = async body => {
   return newContact;
 };
 
-const updateContact = async (contactId, body) => {
-  // if (!body) {
-  //   throw new MissingFieldsError("missing fields");
-  // }
-
-  const contacts = await listContacts();
-
-  const indexOfUpdatingContact = contacts.findIndex(
-    contact => contact.id === contactId
-  );
-
-  // if (indexOfUpdatingContact === -1) {
-  //   throw new NotFoundError();
-  // }
-
-  const updatingContact = contacts[indexOfUpdatingContact];
-
-  const { name, email, phone } = body;
-  updatingContact.name = name;
-  updatingContact.email = email;
-  updatingContact.phone = phone;
-
-  fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-
-  return updatingContact;
-};
-
 const removeContact = async contactId => {
   const contacts = await listContacts();
 
@@ -81,10 +54,33 @@ const removeContact = async contactId => {
 
   return removedContactByID;
 };
+
+const updateContact = async (contactId, body) => {
+  const contacts = await listContacts();
+
+  const indexOfUpdatingContact = contacts.findIndex(
+    contact => contact.id === contactId
+  );
+
+  if (indexOfUpdatingContact === -1) {
+    return undefined;
+  }
+  const updatingContact = contacts[indexOfUpdatingContact];
+
+  const { name, email, phone } = body;
+  updatingContact.name = name;
+  updatingContact.email = email;
+  updatingContact.phone = phone;
+
+  fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+
+  return updatingContact;
+};
+
 module.exports = {
   listContacts,
   getById,
   addContact,
-  updateContact,
   removeContact,
+  updateContact,
 };
