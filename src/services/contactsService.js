@@ -45,7 +45,7 @@ const removeContact = async contactId => {
   );
 
   if (indexOfRemovingContact === -1) {
-    return undefined;
+    return null;
   }
 
   const removedContactByID = contacts[indexOfRemovingContact];

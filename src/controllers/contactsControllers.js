@@ -5,6 +5,7 @@ const {
   updateContact,
   removeContact,
 } = require('../services/contactsService');
+const { RequestError } = require('../helpers');
 
 const listContactsController = async (req, res) => {
   const contacts = await listContacts();
@@ -17,7 +18,7 @@ const getContactByIdController = async (req, res) => {
   const contact = await getById(contactId);
 
   if (!contact) {
-    res.status(404).json({ message: 'Not found' });
+    throw RequestError(404);
   }
 
   res.json(contact);
@@ -37,7 +38,7 @@ const removeContactController = async (req, res) => {
   const contact = await removeContact(contactId);
 
   if (!contact) {
-    res.status(404).json({ message: 'Not found' });
+    throw RequestError(404);
   }
 
   res.json({ message: 'contact deleted' });
@@ -50,7 +51,7 @@ const updateContactController = async (req, res) => {
   const contact = await updateContact(contactId, body);
 
   if (!contact) {
-    res.status(404).json({ message: 'Not found' });
+    throw RequestError(404);
   }
 
   res.json(contact);

@@ -7,22 +7,27 @@ const {
   removeContactController,
   updateContactController,
 } = require('../../controllers/contactsControllers');
-const { asyncWrapper } = require('../../helpers/asyncWrapper');
+const { ctrlWrapper } = require('../../helpers');
+const { validateBody } = require('../../middlewares');
+const contactSchemas = require('../../schemas/contact');
 
-const Validator = require('../../middlewares/Validator');
 
-router.get('/', asyncWrapper(listContactsController));
+router.get('/', ctrlWrapper(listContactsController));
 
-router.get('/:contactId', asyncWrapper(getContactByIdController));
+router.get('/:contactId', ctrlWrapper(getContactByIdController));
 
-router.post('/', Validator('contact'), asyncWrapper(addContactController));
+router.post(
+  '/',
+  validateBody(contactSchemas.addSchema),
+  ctrlWrapper(addContactController)
+);
 
 router.put(
   '/:contactId',
-  Validator('contact'),
-  asyncWrapper(updateContactController)
+  validateBody(contactSchemas.addSchema),
+  ctrlWrapper(updateContactController)
 );
 
-router.delete('/:contactId', asyncWrapper(removeContactController));
+router.delete('/:contactId', ctrlWrapper(removeContactController));
 
 module.exports = router;
