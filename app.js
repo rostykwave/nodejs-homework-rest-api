@@ -8,6 +8,15 @@ const app = express();
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 
+const mongoose = require('mongoose');
+
+const { DB_HOST } = require('./config');
+
+mongoose
+  .connect(DB_HOST)
+  .then(() => console.log('Database connected'))
+  .catch(error => console.log(error.message));
+
 app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
