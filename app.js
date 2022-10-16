@@ -8,16 +8,7 @@ const app = express();
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
 
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-dotenv.config();
-
-const { DB_HOST } = process.env;
-
-mongoose
-  .connect(DB_HOST)
-  .then(() => console.log('Database connected'))
-  .catch(error => console.log(error.message));
+require('dotenv').config();
 
 app.use(logger(formatsLogger));
 app.use(cors());
