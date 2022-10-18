@@ -6,11 +6,11 @@ const {
   addContactController,
   removeContactController,
   updateContactController,
+  updateStatusContactController,
 } = require('../../controllers/contactsControllers');
 const { ctrlWrapper } = require('../../helpers');
 const { validateBody } = require('../../middlewares');
-const contactSchemas = require('../../schemas/contact');
-
+const { schemas } = require('../../models/contact');
 
 router.get('/', ctrlWrapper(listContactsController));
 
@@ -18,14 +18,20 @@ router.get('/:contactId', ctrlWrapper(getContactByIdController));
 
 router.post(
   '/',
-  validateBody(contactSchemas.addSchema),
+  validateBody(schemas.addSchema),
   ctrlWrapper(addContactController)
 );
 
 router.put(
   '/:contactId',
-  validateBody(contactSchemas.addSchema),
+  validateBody(schemas.addSchema),
   ctrlWrapper(updateContactController)
+);
+
+router.patch(
+  '/:contactId/favorite',
+  validateBody(schemas.updateFavoriteSchema),
+  ctrlWrapper(updateStatusContactController)
 );
 
 router.delete('/:contactId', ctrlWrapper(removeContactController));

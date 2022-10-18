@@ -4,6 +4,7 @@ const {
   addContact,
   updateContact,
   removeContact,
+  updateStatusContact,
 } = require('../services/contactsService');
 const { RequestError } = require('../helpers');
 
@@ -57,10 +58,24 @@ const updateContactController = async (req, res) => {
   res.json(contact);
 };
 
+const updateStatusContactController = async (req, res) => {
+  const { contactId } = req.params;
+  const body = req.body;
+
+  const contact = await updateStatusContact(contactId, body);
+
+  if (!contact) {
+    throw RequestError(404);
+  }
+
+  res.json(contact);
+};
+
 module.exports = {
   listContactsController,
   getContactByIdController,
   addContactController,
   removeContactController,
   updateContactController,
+  updateStatusContactController,
 };
