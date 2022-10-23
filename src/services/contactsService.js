@@ -1,7 +1,20 @@
 const { Contact } = require('../models/contact');
 
-const listContacts = async (owner, page, limit) => {
+const listContacts = async (owner, page, limit, favorite) => {
   const skip = (page - 1) * limit;
+
+  if (favorite === 'true') {
+    const favoriteContacts = await Contact.find(
+      { owner, favorite: true },
+      '-createdAt -updatedAt',
+      {
+        skip,
+        limit,
+      }
+    ).populate('owner', 'email');
+    return favoriteContacts;
+  }
+
   const contacts = await Contact.find({ owner }, '-createdAt -updatedAt', {
     skip,
     limit,

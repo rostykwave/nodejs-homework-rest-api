@@ -10,8 +10,8 @@ const { RequestError } = require('../helpers');
 
 const listContactsController = async (req, res) => {
   const { _id: owner } = req.user;
-  const { page = 1, limit = 10 } = req.query;
-  const contacts = await listContacts(owner, page, limit);
+  const { page = 1, limit = 10, favorite = undefined } = req.query;
+  const contacts = await listContacts(owner, page, limit, favorite);
 
   res.json(contacts);
 };
