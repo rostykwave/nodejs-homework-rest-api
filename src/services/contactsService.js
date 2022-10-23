@@ -1,7 +1,11 @@
 const { Contact } = require('../models/contact');
 
-const listContacts = async () => {
-  const contacts = await Contact.find({}, '-createdAt -updatedAt');
+const listContacts = async (owner, page, limit) => {
+  const skip = (page - 1) * limit;
+  const contacts = await Contact.find({ owner }, '-createdAt -updatedAt', {
+    skip,
+    limit,
+  }).populate('owner', 'email');
 
   return contacts;
 };
