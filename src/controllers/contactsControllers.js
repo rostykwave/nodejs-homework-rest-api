@@ -9,7 +9,9 @@ const {
 const { RequestError } = require('../helpers');
 
 const listContactsController = async (req, res) => {
-  const contacts = await listContacts();
+  const { _id: owner } = req.user;
+  const { page = 1, limit = 10, favorite = undefined } = req.query;
+  const contacts = await listContacts(owner, page, limit, favorite);
 
   res.json(contacts);
 };
@@ -26,9 +28,9 @@ const getContactByIdController = async (req, res) => {
 };
 
 const addContactController = async (req, res) => {
-  const body = req.body;
+  const { _id: owner } = req.user;
 
-  const addedContact = await addContact(body);
+  const addedContact = await addContact({ ...req.body, owner });
 
   res.status(201).json(addedContact);
 };
