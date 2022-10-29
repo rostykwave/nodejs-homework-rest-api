@@ -89,8 +89,8 @@ const updateAvatarController = async (req, res) => {
   Jimp.read(resultUpload)
     .then(image => {
       return image
-        .resize(256, 256) // resize
-        .write(`./public/avatars/256/${filename}`); // save
+        .resize(250, 250)
+        .write(`./public/avatars/250x250/${filename}`);
     })
     .catch(err => {
       console.error(err);
