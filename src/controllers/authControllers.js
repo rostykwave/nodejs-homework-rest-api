@@ -86,15 +86,10 @@ const updateAvatarController = async (req, res) => {
   const resultUpload = path.join(avatarsDir, filename);
   await fs.rename(tempUpload, resultUpload);
 
-  Jimp.read(resultUpload)
-    .then(image => {
-      return image
-        .resize(250, 250)
-        .write(`./public/avatars/250x250/${filename}`);
-    })
-    .catch(err => {
-      console.error(err);
-    });
+  Jimp.read(resultUpload, (err, image) => {
+    if (err) throw err;
+    image.resize(250, 250).write(`./public/avatars/${filename}`);
+  });
 
   const avatarURL = path.join('avatars', filename);
 
