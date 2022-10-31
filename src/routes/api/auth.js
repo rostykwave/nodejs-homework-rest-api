@@ -5,9 +5,10 @@ const {
   loginController,
   getCurrentController,
   logoutController,
+  updateAvatarController,
 } = require('../../controllers/authControllers');
 const { ctrlWrapper } = require('../../helpers');
-const { validateBody, authenticate } = require('../../middlewares');
+const { validateBody, authenticate, upload } = require('../../middlewares');
 const { schemas } = require('../../models/user');
 
 router.post(
@@ -25,5 +26,12 @@ router.post(
 router.get('/current', authenticate, ctrlWrapper(getCurrentController));
 
 router.get('/logout', authenticate, ctrlWrapper(logoutController));
+
+router.patch(
+  '/avatars',
+  authenticate,
+  upload.single('avatar'),
+  ctrlWrapper(updateAvatarController)
+);
 
 module.exports = router;

@@ -4,8 +4,13 @@ const {
   comparePasswords,
   findByEmail,
   logout,
+  updateAvatar,
 } = require('../services/authService');
 const { RequestError } = require('../helpers');
+const gravatar = require('gravatar');
+const fs = require('fs/promises');
+const path = require('path');
+const Jimp = require('jimp');
 
 const registerController = async (req, res) => {
   const { email, password, subscription } = req.body;
@@ -20,6 +25,7 @@ const registerController = async (req, res) => {
     email,
     password,
     subscription,
+    avatarURL: gravatar.url(email),
   });
 
   res.status(201).json({
@@ -70,9 +76,34 @@ const logoutController = async (req, res) => {
   res.status(204);
 };
 
+const avatarsDir = path.join(__dirname, '../../', 'public', 'avatars');
+
+const updateAvatarController = async (req, res) => {
+  const { _id: id } = req.user;
+  const { path: tempUpload, originalname } = req.file;
+  const extention = originalname.split('.').pop();
+  const filename = `${id}.${extention}`;
+  const resultUpload = path.join(avatarsDir, filename);
+  await fs.rename(tempUpload, resultUpload);
+
+  Jimp.read(resultUpload, (err, image) => {
+    if (err) throw err;
+    image.resize(250, 250).write(`./public/avatars/${filename}`);
+  });
+
+  const avatarURL = path.join('avatars', filename);
+
+  await updateAvatar(id, avatarURL);
+
+  res.json({
+    avatarURL,
+  });
+};
+
 module.exports = {
   registerController,
   loginController,
   getCurrentController,
   logoutController,
+  updateAvatarController,
 };
