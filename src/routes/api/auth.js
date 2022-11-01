@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
   registerController,
+  verifyController,
   loginController,
   getCurrentController,
   logoutController,
@@ -16,6 +17,8 @@ router.post(
   validateBody(schemas.registerSchema),
   ctrlWrapper(registerController)
 );
+
+router.get('/verify/:verificationToken', ctrlWrapper(verifyController));
 
 router.post(
   '/login',

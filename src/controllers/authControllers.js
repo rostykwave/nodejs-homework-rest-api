@@ -1,8 +1,10 @@
 const {
   register,
+  verify,
   login,
   comparePasswords,
   findByEmail,
+  findByVerificationToken,
   logout,
   updateAvatar,
 } = require('../services/authService');
@@ -33,6 +35,19 @@ const registerController = async (req, res) => {
       email: result.email,
       subscription: result.subscription,
     },
+  });
+};
+
+const verifyController = async (req, res) => {
+  const { verificationToken } = req.params;
+  const user = await findByVerificationToken(verificationToken);
+  if (!user) {
+    throw RequestError(404);
+  }
+  await verify(user._id);
+
+  res.json({
+    message: 'Email verify success',
   });
 };
 
@@ -102,6 +117,7 @@ const updateAvatarController = async (req, res) => {
 
 module.exports = {
   registerController,
+  verifyController,
   loginController,
   getCurrentController,
   logoutController,

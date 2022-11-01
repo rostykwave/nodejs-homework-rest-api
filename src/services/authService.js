@@ -15,6 +15,13 @@ const register = async ({ password, email, subscription, avatarURL }) => {
   return result;
 };
 
+const verify = async id => {
+  await User.findByIdAndUpdate(id, {
+    verify: true,
+    verificationToken: '',
+  });
+};
+
 const login = async id => {
   const payload = {
     id,
@@ -40,6 +47,11 @@ const findByEmail = async email => {
   return user;
 };
 
+const findByVerificationToken = async verificationToken => {
+  const user = User.findOne({ verificationToken });
+  return user;
+};
+
 const logout = async id => {
   return await User.findByIdAndUpdate(id, { token: '' });
 };
@@ -50,9 +62,11 @@ const updateAvatar = async (id, avatarURL) => {
 
 module.exports = {
   register,
+  verify,
   login,
   comparePasswords,
   findByEmail,
+  findByVerificationToken,
   logout,
   updateAvatar,
 };
