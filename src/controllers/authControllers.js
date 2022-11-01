@@ -9,7 +9,6 @@ const {
   updateAvatar,
 } = require('../services/authService');
 const { RequestError } = require('../helpers');
-const gravatar = require('gravatar');
 const fs = require('fs/promises');
 const path = require('path');
 const Jimp = require('jimp');
@@ -27,7 +26,6 @@ const registerController = async (req, res) => {
     email,
     password,
     subscription,
-    avatarURL: gravatar.url(email),
   });
 
   res.status(201).json({
@@ -55,7 +53,7 @@ const loginController = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await findByEmail(email);
-  if (!user) {
+  if (!user || !user.verify) {
     throw RequestError(401, 'Email or password wrong');
   }
 

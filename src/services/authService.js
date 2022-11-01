@@ -1,17 +1,31 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/user');
-const { SECRET_KEY } = process.env;
+const { BASE_URL, SECRET_KEY } = process.env;
+const gravatar = require('gravatar');
+const { v4: uuidv4 } = require('uuid');
+const { sendEmail } = require('../helpers');
 
-const register = async ({ password, email, subscription, avatarURL }) => {
+const register = async ({ password, email, subscription }) => {
   const hashPassword = await bcrypt.hash(password, 10);
+  const verificationToken = uuidv4();
 
   const result = await User.create({
     password: hashPassword,
     email,
     subscription,
-    avatarURL,
+    avatarURL: gravatar.url(email),
+    verificationToken,
   });
+
+  const mail = {
+    to: email,
+    subject: 'Verify email',
+    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click to verify you email</a>`,
+  };
+
+  await sendEmail(mail);
+
   return result;
 };
 
