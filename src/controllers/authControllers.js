@@ -109,7 +109,7 @@ const logoutController = async (req, res) => {
   const { _id: id } = req.user;
   await logout(id);
 
-  res.status(204);
+  res.status(204).json({});
 };
 
 const avatarsDir = path.join(__dirname, '../../', 'public', 'avatars');
