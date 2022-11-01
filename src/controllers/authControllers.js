@@ -53,8 +53,12 @@ const loginController = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await findByEmail(email);
-  if (!user || !user.verify) {
+  if (!user) {
     throw RequestError(401, 'Email or password wrong');
+  }
+
+  if (!user.verify) {
+    throw RequestError(401, 'Email is not verified. Check your mailbox first');
   }
 
   const passwordCompare = await comparePasswords(password, user.password);
