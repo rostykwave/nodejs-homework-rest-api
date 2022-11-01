@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   registerController,
   verifyController,
+  resendEmailController,
   loginController,
   getCurrentController,
   logoutController,
@@ -19,6 +20,12 @@ router.post(
 );
 
 router.get('/verify/:verificationToken', ctrlWrapper(verifyController));
+
+router.post(
+  '/verify',
+  validateBody(schemas.verifyEmailSchema),
+  ctrlWrapper(resendEmailController)
+);
 
 router.post(
   '/login',

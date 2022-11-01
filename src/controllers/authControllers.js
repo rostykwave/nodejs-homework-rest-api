@@ -1,6 +1,7 @@
 const {
   register,
   verify,
+  resendEmail,
   login,
   comparePasswords,
   findByEmail,
@@ -46,6 +47,24 @@ const verifyController = async (req, res) => {
 
   res.json({
     message: 'Verification successful',
+  });
+};
+
+const resendEmailController = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await findByEmail(email);
+  if (!user) {
+    throw RequestError(404);
+  }
+  if (user.verify) {
+    throw RequestError(400, 'Verification has already been passed');
+  }
+
+  await resendEmail(email, user.verificationToken);
+
+  res.json({
+    message: 'Verification email sent',
   });
 };
 
@@ -120,6 +139,7 @@ const updateAvatarController = async (req, res) => {
 module.exports = {
   registerController,
   verifyController,
+  resendEmailController,
   loginController,
   getCurrentController,
   logoutController,

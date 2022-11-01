@@ -36,6 +36,15 @@ const verify = async id => {
   });
 };
 
+const resendEmail = async (email, verificationToken) => {
+  const mail = {
+    to: email,
+    subject: 'Verify email',
+    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click to verify you email</a>`,
+  };
+  await sendEmail(mail);
+};
+
 const login = async id => {
   const payload = {
     id,
@@ -77,6 +86,7 @@ const updateAvatar = async (id, avatarURL) => {
 module.exports = {
   register,
   verify,
+  resendEmail,
   login,
   comparePasswords,
   findByEmail,
