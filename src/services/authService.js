@@ -18,7 +18,7 @@ const register = async ({ password, email, subscription, avatarURL }) => {
 const verify = async id => {
   await User.findByIdAndUpdate(id, {
     verify: true,
-    verificationToken: '',
+    verificationToken: null,
   });
 };
 

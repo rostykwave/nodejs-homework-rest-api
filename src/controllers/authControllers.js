@@ -42,12 +42,12 @@ const verifyController = async (req, res) => {
   const { verificationToken } = req.params;
   const user = await findByVerificationToken(verificationToken);
   if (!user) {
-    throw RequestError(404);
+    throw RequestError(404, 'User not found');
   }
   await verify(user._id);
 
   res.json({
-    message: 'Email verify success',
+    message: 'Verification successful',
   });
 };
 
