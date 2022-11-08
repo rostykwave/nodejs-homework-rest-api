@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const {
   registerController,
+  verifyController,
+  resendEmailController,
   loginController,
   getCurrentController,
   logoutController,
@@ -15,6 +17,14 @@ router.post(
   '/register',
   validateBody(schemas.registerSchema),
   ctrlWrapper(registerController)
+);
+
+router.get('/verify/:verificationToken', ctrlWrapper(verifyController));
+
+router.post(
+  '/verify',
+  validateBody(schemas.verifyEmailSchema),
+  ctrlWrapper(resendEmailController)
 );
 
 router.post(

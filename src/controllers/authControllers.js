@@ -1,13 +1,15 @@
 const {
   register,
+  verify,
+  resendEmail,
   login,
   comparePasswords,
   findByEmail,
+  findByVerificationToken,
   logout,
   updateAvatar,
 } = require('../services/authService');
 const { RequestError } = require('../helpers');
-const gravatar = require('gravatar');
 const fs = require('fs/promises');
 const path = require('path');
 const Jimp = require('jimp');
@@ -25,7 +27,6 @@ const registerController = async (req, res) => {
     email,
     password,
     subscription,
-    avatarURL: gravatar.url(email),
   });
 
   res.status(201).json({
@@ -36,12 +37,47 @@ const registerController = async (req, res) => {
   });
 };
 
+const verifyController = async (req, res) => {
+  const { verificationToken } = req.params;
+  const user = await findByVerificationToken(verificationToken);
+  if (!user) {
+    throw RequestError(404, 'User not found');
+  }
+  await verify(user._id);
+
+  res.json({
+    message: 'Verification successful',
+  });
+};
+
+const resendEmailController = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await findByEmail(email);
+  if (!user) {
+    throw RequestError(404);
+  }
+  if (user.verify) {
+    throw RequestError(400, 'Verification has already been passed');
+  }
+
+  await resendEmail(email, user.verificationToken);
+
+  res.json({
+    message: 'Verification email sent',
+  });
+};
+
 const loginController = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await findByEmail(email);
   if (!user) {
     throw RequestError(401, 'Email or password wrong');
+  }
+
+  if (!user.verify) {
+    throw RequestError(401, 'Email is not verified. Check your mailbox first');
   }
 
   const passwordCompare = await comparePasswords(password, user.password);
@@ -73,7 +109,7 @@ const logoutController = async (req, res) => {
   const { _id: id } = req.user;
   await logout(id);
 
-  res.status(204);
+  res.status(204).json({});
 };
 
 const avatarsDir = path.join(__dirname, '../../', 'public', 'avatars');
@@ -102,6 +138,8 @@ const updateAvatarController = async (req, res) => {
 
 module.exports = {
   registerController,
+  verifyController,
+  resendEmailController,
   loginController,
   getCurrentController,
   logoutController,
