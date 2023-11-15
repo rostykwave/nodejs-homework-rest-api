@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const request = require('supertest');
 require('dotenv').config();
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
 
 const app = require('../../app');
 const { User } = require('../models/user');
@@ -25,9 +26,13 @@ describe('test auth controllers', () => {
 
   test('test login controller', async () => {
     const hashPassword = await bcrypt.hash('123456', 10);
+    const verificationToken = uuidv4();
     const newUser = {
       email: 'newuser1@gmail.com',
       password: hashPassword,
+      subscription: 'pro',
+      verificationToken,
+      verify: true,
     };
 
     const user = await User.create(newUser);
@@ -40,10 +45,12 @@ describe('test auth controllers', () => {
     const response = await request(app).post('/api/auth/login').send(loginUser);
     expect(response.statusCode).toBe(200);
     const { body } = response;
-    expect(body.token).toByTruthy();
+    expect(body.token).toBeTruthy();
     const { token } = await User.findById(user._id);
     expect(body.token).toBe(token);
-    expect(body.user.email).stringContaining();
-    expect(body.user.subscription).stringContaining();
+    expect(body.user.email).toEqual(expect.stringContaining(newUser.email));
+    expect(body.user.subscription).toEqual(
+      expect.stringContaining(newUser.subscription)
+    );
   });
 });
